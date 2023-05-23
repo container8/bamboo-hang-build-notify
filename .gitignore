@@ -1,0 +1,9 @@
+.user_data.sh
+.terraform
+.terraform.lock.hcl
+.pytest_cache
+.terraform.tfstate.lock.info
+terraform.tfstate
+terraform.tfstate.backup
+bamboohbn.egg-info
+.env
