@@ -17,6 +17,5 @@ variable "server" {
 variable "ssh_key" {
   type = object({
     name = string
-    location = string
   })
 }

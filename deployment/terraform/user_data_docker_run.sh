@@ -7,4 +7,4 @@ docker run -d \
     -e "MS_TEAMS_WEB_HOOK_URL=${MS_TEAMS_WEB_HOOK_URL}" \
     -e "PLAN_KEY_TO_WATCH=${PLAN_KEY_TO_WATCH}" \
     -e "BUILD_TIMEOUT_THRESHOLD_SECONDS=${BUILD_TIMEOUT_THRESHOLD_SECONDS}" \
-    earthquakesan/bamboo-hanging-builds-notifier:latest
+    xalt/bamboo-hanging-builds-notifier:latest

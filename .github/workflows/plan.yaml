@@ -1,0 +1,27 @@
+name: plan
+run-name: Terraform plan in a pull request to validate the changes
+on:
+  - pull_request
+
+jobs:
+  tfplan:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+      - run: make tf-plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BAMBOO_TOKEN: ${{ secrets.BAMBOO_TOKEN }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          MS_TEAMS_WEB_HOOK_URL: ${{ secrets.MS_TEAMS_WEB_HOOK_URL }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          BAMBOO_BASE_URL: ${{ vars.BAMBOO_BASE_URL }}
+          BUCKET_KEY: ${{ vars.BUCKET_KEY }}
+          BUCKET_NAME: ${{ vars.BUCKET_NAME }}
+          BUILD_TIMEOUT_THRESHOLD_SECONDS_LIST: ${{ vars.BUILD_TIMEOUT_THRESHOLD_SECONDS_LIST }}
+          PLAN_KEYS_TO_WATCH: ${{ vars.PLAN_KEYS_TO_WATCH }}

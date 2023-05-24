@@ -1,4 +1,6 @@
-include .env
+ifeq ($(USE_DOT_ENV),true) 
+	include .env
+endif
 
 publish_prefix := xalt
 image_name := bamboo-hanging-builds-notifier
@@ -8,9 +10,6 @@ image_name := bamboo-hanging-builds-notifier
 image_tag := latest
 
 test:
-	BAMBOO_TOKEN=${BAMBOO_TOKEN} \
-	MS_TEAMS_WEB_HOOK_URL=${MS_TEAMS_WEB_HOOK_URL} \
-	BAMBOO_BASE_URL=${BAMBOO_BASE_URL} \
 	pytest -s ./tests
 
 docker-test:
@@ -36,12 +35,19 @@ render-user-data:
 	cat ${TF_DIR}/user_data_init.sh >> ${TF_DIR}/.user_data.sh
 	$(foreach var,$(SEQUENCE),\
 	export PLAN_KEY_TO_WATCH=$(word $(var), $(PLAN_KEYS_TO_WATCH)) && \
-	export BUILD_TIMEOUT_THRESHOLD_SECONDS=$(word $(var), $(BUILD_TIMEOUT_THRESHOLD_SECONDS)) && \
+	export BUILD_TIMEOUT_THRESHOLD_SECONDS=$(word $(var), $(BUILD_TIMEOUT_THRESHOLD_SECONDS_LIST)) && \
 	cat ${TF_DIR}/user_data_docker_run.sh | envsubst >> ${TF_DIR}/.user_data.sh;)
 
-tf-plan:
-	$(TF_RUN) init -reconfigure
-	$(TF_RUN) plan -var-file=../environment/main.tfvars -out=${TF_PLAN_FILE} -out=${TF_PLAN_FILE}
+tf-init:
+	$(TF_RUN) init -reconfigure \
+		-backend-config="bucket=${BUCKET_NAME}" \
+		-backend-config="region=${AWS_DEFAULT_REGION}" \
+		-backend-config="key=${BUCKET_KEY}"	
+
+tf-plan: tf-init render-user-data
+	$(TF_RUN) plan \
+		-var-file=../environment/main.tfvars \
+		-out=${TF_PLAN_FILE}
 
 deploy: tf-plan
 	$(TF_RUN) apply ${TF_PLAN_FILE}

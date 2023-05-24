@@ -8,10 +8,9 @@ resource "hcloud_server" "main" {
   }
 
   user_data = file(".user_data.sh")
-  ssh_keys = [ hcloud_ssh_key.default.name ]
+  ssh_keys = [ data.hcloud_ssh_key.default.name ]
 }
 
-resource "hcloud_ssh_key" "default" {
+data "hcloud_ssh_key" "default" {
   name       = var.ssh_key.name
-  public_key = file(var.ssh_key.location)
 }
